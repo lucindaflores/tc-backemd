@@ -1,0 +1,13 @@
+{
+  "code": "TE-003",
+  "name": "Test Product 3",
+  "description": "Test description 3",
+  "price": 15.00,
+  "stock": 1,
+  "imageUrl": "/test/test3.png",
+  "isActive": true,
+  "categoryId": 1,
+  "originId": 99999,
+  "materialIds": [1],
+  "version": 0
+}
