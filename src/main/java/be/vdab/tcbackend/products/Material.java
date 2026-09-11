@@ -12,14 +12,18 @@ import java.util.Set;
 class Material {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY) /* Thema 9: Toevoegen */
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                   generator = "materialGenerator") /*9.8 Sequence */
+    @SequenceGenerator(name = "materialGenerator",
+            sequenceName = "materialid",
+     allocationSize = 1) // increment by 1 private long id;
     private long id;
 
     String name;
-    String name_spanish;
+
+    @Column(name = "name_spanish")
+    String nameInSpanish;
     String technique;
-
-
 
     /* Thema 24: @ManyToMany */
     // MappedBy: Represents the other side of the association in the Task class.
@@ -30,9 +34,9 @@ class Material {
     /* Constructors */
     // Thema 9: Toevoegen
     // NOTE: No id in the constructor bc db created the id
-    public Material(String name, String name_spanish, String technique) {
+    public Material(String name, String nameInSpanish, String technique) {
         this.name = name;
-        this.name_spanish = name_spanish;
+        this.nameInSpanish = nameInSpanish;
         this.technique = technique;
     }
 
@@ -50,8 +54,8 @@ class Material {
         return name;
     }
 
-    public String getName_spanish() {
-        return name_spanish;
+    public String getNameInSpanish() {
+        return nameInSpanish;
     }
 
     public String getTechnique() {
@@ -68,6 +72,12 @@ class Material {
         if (!products.add(product)) {
             throw new ProductAlreadyHasThisMaterialException();
         }
+    }
+
+    void update(String name, String nameInSpanish, String technique) {
+        this.name = name;
+        this.nameInSpanish = nameInSpanish;
+        this.technique = technique;
     }
     /* Equals & Hashcode */
     @Override

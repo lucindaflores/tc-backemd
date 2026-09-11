@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 // <entity class, variable type of the PK>
-interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /* Method that finds by categoryId and returns optional product */
     List<Product> findByCategoryId(long categoryId);

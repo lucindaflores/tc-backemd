@@ -1,6 +1,7 @@
 package be.vdab.tcbackend.products;
 
 import be.vdab.tcbackend.categories.Category;
+import be.vdab.tcbackend.order.OrderDetail;
 import be.vdab.tcbackend.origins.Origin;
 import jakarta.persistence.*;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="products")
-class Product {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
@@ -59,6 +60,8 @@ class Product {
             inverseJoinColumns = @JoinColumn(name = "material_id"))
     private Set<Material> materials = new LinkedHashSet<>();// Set that represents the many-to-many association
 
+    @OneToMany(mappedBy = "product")
+    private Set<OrderDetail> orderDetails;
 
     @Version
     private long version;
@@ -130,6 +133,7 @@ class Product {
         return category;
     }
 
+    // Thema 21: @ManyToOne
     public Origin getOrigin() {
         return origin;
     }
@@ -143,11 +147,40 @@ class Product {
         return version;
     }
 
+    /* @OneToMany */
+    public Set<OrderDetail> getOrderDetails() {
+       // return orderDetails;
+        return Collections.unmodifiableSet(orderDetails);
+    }
+
+    public void setOrderDetails(Set<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+    }
+
+    /* Equals & Hashcode */
+    public boolean equals(Object object) {
+        return object instanceof Product product && code.equalsIgnoreCase(product.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return code.toLowerCase().hashCode();
+    }
+
     /* Functions */
     void add(Material material) {
         if (!materials.add(material)) {
             throw new ProductAlreadyHasThisMaterialException();
         }
+    }
+
+    /* Functions */
+    public void decreaseStock(int value) {
+        if (this.stock < value) {
+            throw new NotEnoughProductsException(this.getId());
+        }
+
+        stock -= value;
     }
 
  /* This method updates all fields at once, instead of calling set by set */
@@ -176,4 +209,6 @@ class Product {
         materials.clear();
         materials.addAll(newMaterials);
     }
+
+
 }

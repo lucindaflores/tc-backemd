@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("products")
@@ -21,7 +20,6 @@ class ProductController {
     ProductController(ProductService productService) {
         this.productService = productService;
     }
-
 
     private record ProductName(String name) {
         ProductName(Product product) {
@@ -64,19 +62,13 @@ class ProductController {
     @GetMapping("count")
     long findCount() { return productService.findCount(); }
 
-    /* GET request that returns the current version of product  */
-    @GetMapping("version/{id}")
-    long findVersionById(@PathVariable long id) {
-        return productService.findVersionById(id);
-    }
-
     /* GET request that returns all the product names */
     // GET http://localhost:8080/products/all
     @GetMapping("all")
     List<ProductName> findAll() {
         return productService.findAll()
                 .stream()
-                .map(product -> new ProductName(product))
+                .map(ProductName::new)
                 .toList();
     }
     //List means: I already have a collection of results.
@@ -87,7 +79,7 @@ class ProductController {
     @GetMapping("{id}")
     ProductWithAllDetails findById(@PathVariable long id) {
         return productService.findById(id)
-                .map(product -> new ProductWithAllDetails(product))
+                .map(ProductWithAllDetails::new)
                 .orElseThrow(ProductNotFoundException::new);
     }
 
@@ -113,7 +105,7 @@ class ProductController {
 
     // GET request to find the products by materialId
     // GET http://localhost:8080/products/bymaterial/{{materialId}}
-    @GetMapping("bymaterial/{materialId}")
+    @GetMapping("byMaterial/{materialId}")
     List<ProductWithAllDetails> findByMaterialId(@PathVariable long materialId) {
         return productService.findByMaterialId(materialId)
                 .stream()
@@ -123,9 +115,8 @@ class ProductController {
 
     // GET request to find products by a set of materials
     // GET http://localhost:8080/products/bymaterials?materialIds=1,2,3
-    @GetMapping("bymaterials")
-    List<ProductWithAllDetails> findByMaterialIds(
-            @RequestParam Set<Long> materialIds) {
+    @GetMapping("byMaterials")
+    List<ProductWithAllDetails> findByMaterialIds(@RequestParam Set<Long> materialIds) {
 
         return productService.findByMaterialIds(materialIds)
                 .stream()
@@ -135,7 +126,7 @@ class ProductController {
 
     // GET request to find all products in stock
     // GET http://localhost:8080/products/instock
-    @GetMapping("instock")
+    @GetMapping("inStock")
     List<ProductWithAllDetails> findInStock() {
         return productService.findInStock()
                 .stream()
@@ -151,12 +142,32 @@ class ProductController {
     }
 
     /* POST request to create a new Product */
-    // POST http://localhost:8080/product
+    // POST http://localhost:8080/products
     /* Thema 9: Toevoegen */
     @PostMapping()
     long create(@RequestBody @Valid NewProduct newProduct) {
         return productService.create(newProduct);
     }
+/*
+###
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "code": "CW-006",
+  "name": "Copper cup large with flower motives",
+  "description": "Copper cup large size made...",
+  "price": 22,
+  "stock": 50,
+  "imageUrl": "image/dos.png",
+  "isActive": true,
+  "categoryId": 1,
+  "originId": 2,
+  "materialIds": [
+     1, 8
+  ]
+}
+ */
 
     /* PUT request to update a Product by id */
     // PUT http://localhost:8080/products/{{id}}
@@ -168,8 +179,8 @@ class ProductController {
     }
 
     /* Thema 10: Verwijderen */
-    /* DELETE request to delete a product by Id */
-    //DELETE http://localhost:8080/products/51
+    /* DELETE request to delete a product by id */
+    //DELETE http://localhost:8080/products/{{id}}
     @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
         try {

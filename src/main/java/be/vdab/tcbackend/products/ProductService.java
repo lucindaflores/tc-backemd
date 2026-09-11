@@ -20,21 +20,19 @@ class ProductService {
 
     private final CategoryRepository categoryRepository;
     private final OriginRepository originRepository;
-    private final MaterialsRepository materialsRepository;
+    private final MaterialRepository materialRepository;
 
-    ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, OriginRepository originRepository, MaterialsRepository materialsRepository) {
+    ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, OriginRepository originRepository, MaterialRepository materialRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.originRepository = originRepository;
-        this.materialsRepository = materialsRepository;
+        this.materialRepository = materialRepository;
     }
 
     /* Method that returns the count of products in table products */
     long findCount() {
         return productRepository.count();
     }
-
-    long findVersionById(long id) { return productRepository.findVersionById(id); }
 
     /* Method that returns a list of all products */
     List<Product> findAll() {
@@ -43,7 +41,7 @@ class ProductService {
 
     /* Method that finds by id and returns an optional Product  */
     Optional<Product> findById(long id) {
-        return  productRepository.findById(id);
+        return productRepository.findById(id);
     }
 
     /* Method that finds by categoryId and returns  a list of products */
@@ -95,9 +93,9 @@ class ProductService {
 
             // 4. Find Materials identified by materialIds.
             // Product: materials added in the Product constructor & function
-            var materials = materialsRepository.findAllById(newProduct.materialIds());
+            var materials = materialRepository.findAllById(newProduct.materialIds());
 
-           //  5. Create a Product Java object.
+           //  5. Create a Product obj
             var product = new Product(newProduct.code(),
                     newProduct.name(),
                     newProduct.description(),
@@ -125,6 +123,7 @@ class ProductService {
         }
     }
 
+    /* Method that updates all fields for the product model */
     @Transactional
     void update(long id, EditProduct editProduct) {
         try {
@@ -142,7 +141,7 @@ class ProductService {
         var origin = originRepository.findById(editProduct.originId())
                 .orElseThrow(OriginNotFoundException::new);
 
-        var materials = materialsRepository.findAllById(editProduct.materialIds());
+        var materials = materialRepository.findAllById(editProduct.materialIds());
 
         product.update(editProduct.code(),
                     editProduct.name(),
