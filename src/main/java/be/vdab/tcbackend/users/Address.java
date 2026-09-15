@@ -8,10 +8,10 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "addressGenerator") /*9.8 Sequence */
+            generator = "addressGenerator")
     @SequenceGenerator(name = "addressGenerator",
             sequenceName = "addressid",
-            allocationSize = 1) // increments by 1
+            allocationSize = 1)
     private Long id;
 
     private String street;
@@ -28,8 +28,6 @@ public class Address {
 
     private String country;
 
-    /* Thema 21: @ManyToOne */
-    // LAZY: So it does not load both tables when just one field of one table is needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -91,6 +89,5 @@ public class Address {
         this.postalCode = postalCode;
         this.country = country;
     }
-
 
 }

@@ -8,7 +8,7 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "categoryGenerator") /*9.8 Sequence */
+            generator = "categoryGenerator")
     @SequenceGenerator(name = "categoryGenerator",
             sequenceName = "categoryid",
             allocationSize = 1) // increment by 1
@@ -37,7 +37,5 @@ public class Category {
     public void updateName(String name) {
         this.name = name;
     }
-
-
 
 }

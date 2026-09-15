@@ -13,10 +13,10 @@ class Material {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-                   generator = "materialGenerator") /*9.8 Sequence */
+                   generator = "materialGenerator")
     @SequenceGenerator(name = "materialGenerator",
             sequenceName = "materialid",
-     allocationSize = 1) // increment by 1 private long id;
+     allocationSize = 1)
     private long id;
 
     String name;
@@ -25,27 +25,19 @@ class Material {
     String nameSpanish;
     String technique;
 
-    /* Thema 24: @ManyToMany */
-    // MappedBy: Represents the other side of the association in the Task class.
-    // JPA will find there how the association has been worked out in the database: the variable docenten stands for: @JoinTable(…)
     @ManyToMany(mappedBy = "materials")
     private Set<Product> products = new LinkedHashSet<>();
 
     /* Constructors */
-    // Thema 9: Toevoegen
-    // NOTE: No id in the constructor bc db created the id
     public Material(String name, String nameSpanish, String technique) {
         this.name = name;
         this.nameSpanish = nameSpanish;
         this.technique = technique;
     }
 
-    // Thema 9: Toevoegen
-    // A default protected constructor is needed so JPA can work
     protected Material() { }
 
     /* Getters */
-
     public long getId() {
         return id;
     }
@@ -67,7 +59,7 @@ class Material {
     }
 
     /* Functions */
-    /* Thema 24: @ManyToMany */
+    /*  @ManyToMany */
     void add(Product product) {
         if (!products.add(product)) {
             throw new ProductAlreadyHasThisMaterialException();
@@ -79,6 +71,7 @@ class Material {
         this.nameSpanish = nameInSpanish;
         this.technique = technique;
     }
+
     /* Equals & Hashcode */
     @Override
     public boolean equals(Object o) {

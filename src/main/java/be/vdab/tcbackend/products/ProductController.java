@@ -91,7 +91,6 @@ class ProductController {
     }
 
 
-
     /* GET request that returns the count of products  */
     // GET http://localhost:8080/products/count
     @GetMapping("count")
@@ -106,8 +105,6 @@ class ProductController {
                 .map(ProductCondensed::new)
                 .toList();
     }
-    //List means: I already have a collection of results.
-    // Stream: I want to process a sequence of objects.
 
     /* GET request that returns all the product names */
     // GET http://localhost:8080/products/all
@@ -118,8 +115,6 @@ class ProductController {
                 .map(ProductName::new)
                 .toList();
     }
-    //List means: I already have a collection of results.
-    // Stream: I want to process a sequence of objects.
 
     // GET requests finds by id returns one product */
     // GET http://localhost:8080/products/{{id}}
@@ -219,14 +214,12 @@ Content-Type: application/json
 
     /* PUT request to update a Product by id */
     // PUT http://localhost:8080/products/{{id}}
-    // NOTE: find the version first and send the put tih current version
     @PutMapping("{id}")
     void update(@PathVariable long id,
                 @RequestBody @Valid EditProduct editProduct) {
         productService.update(id, editProduct);
     }
 
-    /* Thema 10: Verwijderen */
     /* DELETE request to delete a product by id */
     //DELETE http://localhost:8080/products/{{id}}
     @DeleteMapping("{id}")

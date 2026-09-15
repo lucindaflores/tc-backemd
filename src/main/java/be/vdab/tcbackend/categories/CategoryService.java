@@ -42,8 +42,6 @@ class CategoryService {
     }
 
     /* Method that creates a new category */
-    /* Thema 9: Toevoegen */
-    // UPDATE - Thema 21: @ManyToOne
     @Transactional
     long create(NewCategory newCategory) {
         if (findByName(newCategory.name()).isPresent()) {
@@ -85,7 +83,6 @@ class CategoryService {
 
         categoryRepository.delete(category);
     }
-
 
 
 }

@@ -49,7 +49,6 @@ public class OrderDetail {
     protected OrderDetail() { }
 
     /* Getters */
-
     public long getId() {
         return id;
     }

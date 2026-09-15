@@ -103,8 +103,6 @@ class OrderController {
                 .map(OrderWithoutDetails::new)
                 .toList();
     }
-    //List means: I already have a collection of results.
-    //Stream: I want to process a sequence of objects.
 
     // GET requests finds by id returns one order */
     // GET http://localhost:8080/orders/{{id}}
@@ -159,7 +157,6 @@ class OrderController {
     void complete(@PathVariable long id) {
         orderService.complete(id);
     }
-
 
 
 }

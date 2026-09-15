@@ -75,27 +75,17 @@ class ProductService {
     }
 
     /* Method that creates a new product */
-    /* Thema 9: Toevoegen */
-    // UPDATE - Thema 21: @ManyToOne
     @Transactional
     long create(NewProduct newProduct) {
         try {
-            // Find the cat
             var category = categoryRepository.findById(newProduct.categoryId())
                     .orElseThrow(CategoryNotFoundException::new);
-            // RETURNS: Optional<Category>
 
-            //  Find origin
             var origin = originRepository.findById(newProduct.originId())
                     .orElseThrow(OriginNotFoundException::new);
-            // RETURNS: Optional<Origin>
 
-            // Find Materials
             // Product: materials added in the Product constructor & function
             var materials = materialRepository.findAllById(newProduct.materialIds());
-
-            IO.println("Requested: " + newProduct.materialIds());
-            IO.println("Found: " + materials.size());
 
             // Compares sets sizes to see if they have the same number of elements
             if (materials.size() != newProduct.materialIds().size()) {
@@ -119,7 +109,6 @@ class ProductService {
                 product.add(material); // owning side
                 material.add(product); // inverse side to synchronize the set
             }
-           // materials.forEach(product::add);
 
              return product.getId();
         } catch (DataIntegrityViolationException _) {

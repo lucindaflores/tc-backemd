@@ -30,8 +30,6 @@ class MaterialService {
     }
 
     /* Method that creates a new material */
-    /* Thema 9: Toevoegen */
-    // UPDATE - Thema 21: @ManyToOne
     @Transactional
     long create(NewMaterial newMaterial) {
         if (findByName(newMaterial.name()).isPresent()) {

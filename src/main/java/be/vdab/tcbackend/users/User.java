@@ -36,8 +36,6 @@ public class User {
 
     private boolean active;
 
-    /* Thema 23: Bidirectionele Associatie met @OneToMany */
-    // In the class products, under the variable campus in @JoinColumn, JPA finds how the association is expressed in the database.
     @OneToMany(mappedBy = "user")
     private Set<Address> addresses = new LinkedHashSet<>();
 

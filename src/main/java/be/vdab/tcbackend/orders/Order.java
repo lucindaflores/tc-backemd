@@ -24,25 +24,6 @@ public class Order {
 
     @Enumerated(EnumType.STRING) private Status status;
 
-//    /* Shipping details  */
-//    @Column(name = "shipping_street")
-//    private String shippingStreet;
-//
-//    @Column(name = "shipping_house_number")
-//    private String shippingHouseNumber;
-//
-//    @Column(name = "shipping_bus")
-//    private String shippingBus;
-//
-//    @Column(name = "shipping_city")
-//    private String shippingCity;
-//
-//    @Column(name = "shipping_postal_code")
-//    private String shippingPostalCode;
-//
-//    @Column(name = "shipping_country")
-//    private String shippingCountry;
-
     /* Relationships */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -59,12 +40,6 @@ public class Order {
         this.status = Status.PLACED;
         this.user = user;
 
-//        this.shippingStreet = address.getStreet();
-//        this.shippingHouseNumber = address.getHouseNumber();
-//        this.shippingBus = address.getBus();
-//        this.shippingCity = address.getCity();
-//        this.shippingPostalCode = address.getPostalCode();
-//        this.shippingCountry = address.getCountry();
     }
 
     protected Order() { }
@@ -118,21 +93,5 @@ public class Order {
          }
         this.status = Status.CANCELLED;
     }
-
-    /* Equals & Hash code */
-    // TODO: Do i need equals & hashcode for orderdetail
-    /* Equals, Hashcode */
-    /* Thema 23: Bidirectionele Associatie met @OneToMany */
-    // Based on email because it is unique and it does not change
-//    @Override
-//    public boolean equals(Object object) {
-//        if (!(object instanceof Order order)) return false;
-//        return id == order.id && version == order.version;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, version);
-//    }
 
 }

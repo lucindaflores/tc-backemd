@@ -17,10 +17,10 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-                      generator = "productGenerator") /*9.8 Sequence */
+                      generator = "productGenerator")
     @SequenceGenerator(name = "productGenerator",
                     sequenceName = "productid",
-    allocationSize = 1) // increment by 1
+    allocationSize = 1)
     private long id;
 
     private String code; // It's unique
@@ -34,21 +34,14 @@ public class Product {
 
     private boolean active;
 
-    /* Thema 21: @ManyToOne */
-    // LAZY: So it does not load both tables when just one field of one table is needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    /* Thema 21: @ManyToOne */
-    // LAZY: So it does not load both tables when just one field of one table is needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_id")
     private Origin origin;
 
-    /* Thema 24: @ManyToMany */
-    //Which Java entity contains the @JoinTable mapping and whose collection changes Hibernate uses to maintain that join table.
-    // Owning side
     @ManyToMany
     @JoinTable(
             name = "product_materials",
@@ -61,8 +54,6 @@ public class Product {
 
 
     /* Constructors */
-    // Thema 9: Toevoegen
-    // NOTE: No id in the constructor bc db created the id
     Product(String code,
             String name,
             String description,
@@ -82,11 +73,8 @@ public class Product {
         this.category = category;
         this.origin = origin;
         orderDetails = new LinkedHashSet<>();
-       // materials = new LinkedHashSet<>();
     }
 
-    // Thema 9: Toevoegen
-    // A default protected constructor is needed so JPA can work
     protected Product() { }
 
 
@@ -123,25 +111,23 @@ public class Product {
         return active;
     }
 
-    // Thema 21: @ManyToOne
+    // @ManyToOne
     public Category getCategory() {
         return category;
     }
 
-    // Thema 21: @ManyToOne
+    // @ManyToOne
     public Origin getOrigin() {
         return origin;
     }
 
-    // Thema 24: @ManyToMany
+    //  @ManyToMany
     public Set<Material> getMaterials() {
         return Collections.unmodifiableSet(materials);
     }
 
-
     /* @OneToMany */
     public Set<OrderDetail> getOrderDetails() {
-       // return orderDetails;
         return Collections.unmodifiableSet(orderDetails);
     }
 
@@ -199,7 +185,6 @@ public class Product {
         this.category = category;
         this.origin = origin;
     }
-
 
     void replaceMaterials(Collection<Material> newMaterials) {
         materials.clear();

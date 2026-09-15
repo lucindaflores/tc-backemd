@@ -60,13 +60,11 @@ class AddressController {
 
     /* POST request to create a new Address */
     // POST http://localhost:8080/addresses
-    /* Thema 9: Toevoegen */
     @PostMapping("forUser/{userId}")
     long create(@PathVariable long userId, @RequestBody @Valid NewAddress newAddress) {
         return addressService.create(userId, newAddress);
     }
 
-    /* Thema 10: Verwijderen */
     /* DELETE request to delete a user by id */
     //DELETE http://localhost:8080/users/{{id}}
     @DeleteMapping("{id}")
@@ -92,9 +90,6 @@ Content-Type: application/json
   "country": "United States"
 }
  */
-
-
-
 
 
 }

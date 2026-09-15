@@ -49,8 +49,6 @@ class OrderService {
 
     /* Create order*/
     /* Method that creates a new order and  changes the status of the order to 'ORDERED'  */
-    /* Thema 9: Toevoegen */
-    // UPDATE - Thema 21: @ManyToOne
     @Transactional
     long create(NewOrder newOrder) {
         try {
@@ -62,10 +60,7 @@ class OrderService {
             var address = addressRepository.findByIdAndUserId(newOrder.addressId(), user.getId())
                     .orElseThrow(AddressNotFoundException::new);
 
-            // Create an Order  obj
             var order = new Order(user, address);
-            // An empty  orderDetails LinkedHasSet is created
-            // User details need to be saved in a previous step
 
             if (!order.getUser().isActive()) {
                 throw new UserInactiveException();
@@ -97,7 +92,6 @@ class OrderService {
                order.add(orderDetail);
             }
 
-            // Save in OrderRepo
             orderRepository.save(order);
 
             return order.getId();

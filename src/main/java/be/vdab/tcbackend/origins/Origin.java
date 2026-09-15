@@ -13,16 +13,14 @@ public class Origin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "originGenerator") /*9.8 Sequence */
+            generator = "originGenerator")
     @SequenceGenerator(name = "originGenerator",
             sequenceName = "originid",
-            allocationSize = 1) // increment by 1 private long id
+            allocationSize = 1)
     private long id;
 
     private String name;
 
-    /* Thema 23: Bidirectionele Associatie met @OneToMany */
-    // In the class products, under the variable campus in @JoinColumn, JPA finds how the association is expressed in the database.
     @OneToMany(mappedBy = "origin")
     @OrderBy("name")
     private Set<Product> products = new LinkedHashSet<>();
@@ -32,7 +30,6 @@ public class Origin {
         this.name = name;
     }
 
-    // A default protected constructor is needed so JPA can work
     protected Origin() { }
 
     /* Getters */

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Positive;
 
 import java.util.Set;
 
-/*  JSON representation arriving from a POST request */
 record NewOrder(
         @Positive long userId,
         @Positive long addressId,
