@@ -1,18 +1,16 @@
 package be.vdab.tcbackend.products;
 
-
-import be.vdab.tcbackend.categories.Category;
-import be.vdab.tcbackend.origins.Origin;
 import jakarta.validation.Valid;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("products")
+@CrossOrigin
 class ProductController {
 
     private final ProductService productService;
@@ -21,25 +19,47 @@ class ProductController {
         this.productService = productService;
     }
 
+    /* DTOs */
     private record ProductName(String name) {
         ProductName(Product product) {
             this(product.getName());
         }
     }
 
-    /* This DTO adds the corresponding categories to a product */
+    private record ProductCondensed(
+            long id,
+            String name,
+            BigDecimal price,
+            int stock,
+            String imageUrl,
+            String originName) {
+        ProductCondensed(Product product) {
+            this(product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getStock(),
+                    product.getImageUrl(),
+                    product.getOrigin().getName()
+            );
+        }
+    }
+
+
+    /* This DTO shows a product with all details for findById */
     private record ProductWithAllDetails(
-            long productId,
+            long id,
             String code,
             String name,
             String description,
             BigDecimal price,
             int stock,
             String imageUrl,
-            boolean isActive,
-            Category categoryId,
-            Origin originId,
-            Set<Material> materialSet) {
+            boolean active,
+            long categoryId,
+            String categoryName,
+            long originId,
+            String originName,
+            Set<MaterialDetails> materialSet) {
         ProductWithAllDetails(Product product) {
             this(product.getId(),
                     product.getCode(),
@@ -48,13 +68,28 @@ class ProductController {
                     product.getPrice(),
                     product.getStock(),
                     product.getImageUrl(),
-                    product.isActive(),
-                    product.getCategory(),
-                    product.getOrigin(),
-                    product.getMaterials());
-        }
+                    product.active(),
 
+                    product.getCategory().getId(),
+                    product.getCategory().getName(),
+
+                    product.getOrigin().getId(),
+                    product.getOrigin().getName(),
+
+                    product.getMaterials()
+                            .stream()
+                            .map(MaterialDetails::new)
+                            .collect(Collectors.toSet())
+            );
+        }
     }
+
+    private record MaterialDetails(long id, String name) {
+        MaterialDetails(Material material) {
+            this(material.getId(), material.getName());
+        }
+    }
+
 
 
     /* GET request that returns the count of products  */
@@ -64,8 +99,20 @@ class ProductController {
 
     /* GET request that returns all the product names */
     // GET http://localhost:8080/products/all
-    @GetMapping("all")
-    List<ProductName> findAll() {
+    @GetMapping()
+    List<ProductCondensed> findAll() {
+        return productService.findAll()
+                .stream()
+                .map(ProductCondensed::new)
+                .toList();
+    }
+    //List means: I already have a collection of results.
+    // Stream: I want to process a sequence of objects.
+
+    /* GET request that returns all the product names */
+    // GET http://localhost:8080/products/all
+    @GetMapping("names")
+    List<ProductName> findAllNames() {
         return productService.findAll()
                 .stream()
                 .map(ProductName::new)
@@ -79,48 +126,49 @@ class ProductController {
     @GetMapping("{id}")
     ProductWithAllDetails findById(@PathVariable long id) {
         return productService.findById(id)
+                // .stream()
                 .map(ProductWithAllDetails::new)
+                // .toList();
                 .orElseThrow(ProductNotFoundException::new);
     }
 
     // GET requests finds by categoryId returns one product */
     // GET http://localhost:8080/products/bycategory/{{id}}
     @GetMapping("/bycategory/{categoryId}")
-    List<ProductWithAllDetails> findByCategoryId(@PathVariable long categoryId) {
+    List<ProductCondensed> findByCategoryId(@PathVariable long categoryId) {
         return productService.findByCategoryId(categoryId)
                 .stream()
-                .map(ProductWithAllDetails::new)
+                .map(ProductCondensed::new)
                 .toList();
     }
 
     // GET requests finds by originId returns one product */
     // GET http://localhost:8080/products/byorigin/{{id}}
     @GetMapping("/byorigin/{originId}")
-    List<ProductWithAllDetails> findByOriginId(@PathVariable long originId) {
+    List<ProductCondensed> findByOriginId(@PathVariable long originId) {
         return productService.findByOriginId(originId)
                 .stream()
-                .map(ProductWithAllDetails::new)
+                .map(ProductCondensed::new)
                 .toList();
     }
 
     // GET request to find the products by materialId
     // GET http://localhost:8080/products/bymaterial/{{materialId}}
     @GetMapping("byMaterial/{materialId}")
-    List<ProductWithAllDetails> findByMaterialId(@PathVariable long materialId) {
+    List<ProductCondensed> findByMaterialId(@PathVariable long materialId) {
         return productService.findByMaterialId(materialId)
                 .stream()
-                .map(ProductWithAllDetails::new)
+                .map(ProductCondensed::new)
                 .toList();
     }
 
     // GET request to find products by a set of materials
     // GET http://localhost:8080/products/bymaterials?materialIds=1,2,3
     @GetMapping("byMaterials")
-    List<ProductWithAllDetails> findByMaterialIds(@RequestParam Set<Long> materialIds) {
-
+    List<ProductCondensed> findByMaterialIds(@RequestParam Set<Long> materialIds) {
         return productService.findByMaterialIds(materialIds)
                 .stream()
-                .map(ProductWithAllDetails::new)
+                .map(ProductCondensed::new)
                 .toList();
     }
 
@@ -160,7 +208,7 @@ Content-Type: application/json
   "price": 22,
   "stock": 50,
   "imageUrl": "image/dos.png",
-  "isActive": true,
+  "active": true,
   "categoryId": 1,
   "originId": 2,
   "materialIds": [
@@ -183,10 +231,7 @@ Content-Type: application/json
     //DELETE http://localhost:8080/products/{{id}}
     @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
-        try {
-            productService.delete(id);
-        } catch (EmptyResultDataAccessException _) {
-        }
+        productService.delete(id);
     }
 
 }

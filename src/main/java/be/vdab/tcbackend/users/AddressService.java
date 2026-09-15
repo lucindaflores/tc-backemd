@@ -48,8 +48,7 @@ class AddressService {
     }
 
     @Transactional
-    void update(long id, @NonNull EditAddress editAddress) {
-        IO.println("ID:" + id + "-" + editAddress.toString());
+    void update(long id, EditAddress editAddress) {
         var address = addressRepository.findById(id)
                 .orElseThrow(AddressNotFoundException::new);
 

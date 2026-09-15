@@ -1,6 +1,4 @@
 package be.vdab.tcbackend.users;
-
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +30,12 @@ class UserService {
 
     @Transactional
     long create(NewUser newUser) {
+        if (userRepository.findByEmail(newUser.email()).isPresent()) {
+            throw new UserAlreadyExistsException();
+        }
+
         var user = new User(
                 newUser.email(),
-                newUser.password(),
                 newUser.firstName(),
                 newUser.lastName()
         );
@@ -46,14 +47,13 @@ class UserService {
 
     @Transactional
     void update(long id,
-                String email,
                 String firstName,
                 String lastName) {
 
         var user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
 
-        user.update(email, firstName, lastName);
+        user.update(firstName, lastName);
     }
 
     @Transactional
@@ -65,14 +65,6 @@ class UserService {
     }
 
     @Transactional
-    void updatePassword(long id, String passwordHash) {
-        var user = userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
-
-        user.updatePassword(passwordHash);
-    }
-
-    @Transactional
     void updateRole(long id, Role role) {
         var user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
@@ -81,18 +73,11 @@ class UserService {
     }
 
     @Transactional
-    void updateFirstName(long id, String firstName) {
+    void deactivate(long id) {
         var user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
 
-        user.updateFirstName(firstName);
+        user.deactivate();
     }
 
-    @Transactional
-    void updateLastName(long id, String lastName) {
-        var user = userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
-
-        user.updateLastName(lastName);
-    }
 }

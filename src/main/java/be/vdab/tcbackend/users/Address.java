@@ -1,9 +1,6 @@
 package be.vdab.tcbackend.users;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-
-import java.util.Objects;
 
 @Entity
 @Table(name="addresses")
@@ -36,10 +33,6 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Version
-    private long version;
-
 
     public Address(String street, String houseNumber, String bus, String city, String postalCode, String country, User user) {
         this.street = street;
@@ -85,10 +78,6 @@ public class Address {
         return user;
     }
 
-    public long getVersion() {
-        return version;
-    }
-
     void update(String street,
                 String houseNumber,
                 String bus,
@@ -102,22 +91,6 @@ public class Address {
         this.postalCode = postalCode;
         this.country = country;
     }
-    /* Equals & Hash code */
-    // TODO: Do i need equals & hashcode for orderdetail
-    /* Equals, Hashcode */
-    /* Thema 23: Bidirectionele Associatie met @OneToMany */
-    // Based on email because it is unique and it does not change
-//    @Override
-//    public boolean equals(Object object) {
-//        if (!(object instanceof Address address)) return false;
-//        return version == address.version && Objects.equals(id, address.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, version);
-//    }
-
 
 
 }

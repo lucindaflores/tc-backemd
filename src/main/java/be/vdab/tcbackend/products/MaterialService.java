@@ -40,22 +40,22 @@ class MaterialService {
 
         var material = new Material(newMaterial.name(), newMaterial.nameSpanish(), newMaterial.technique());
 
-        IO.println("MATERIAL: " + material);
         materialRepository.save(material);
 
         return material.getId();
-
     }
 
     /* Method that updates all fields in the material model */
     @Transactional
     void update(long id, NewMaterial newMaterial) {
-        // Check that the material exists in the db
-        var material = materialRepository.findByName(newMaterial.name())
+        var material = materialRepository.findById(id)
                 .orElseThrow(MaterialNotFoundException::new);
 
+        // Check that the material exists in the db
+        var materialWithSameName = materialRepository.findByName(newMaterial.name());
+
         // Checks if the material name is present
-        if (!material.getName().equals(newMaterial.name())) {
+        if (materialWithSameName.isPresent() && materialWithSameName.get().getId() != id) {
             throw new MaterialAlreadyExistsException();
         }
 
@@ -70,6 +70,12 @@ class MaterialService {
     void delete(long id) {
         var material = materialRepository.findById(id)
                 .orElseThrow(MaterialNotFoundException::new);
+
+
+        // Check if the material is present in any product
+        if (!material.getProducts().isEmpty()) {
+            throw new MaterialIsInUseException();
+        }
 
         materialRepository.delete(material);
     }

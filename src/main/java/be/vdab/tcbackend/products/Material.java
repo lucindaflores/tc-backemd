@@ -22,7 +22,7 @@ class Material {
     String name;
 
     @Column(name = "name_spanish")
-    String nameInSpanish;
+    String nameSpanish;
     String technique;
 
     /* Thema 24: @ManyToMany */
@@ -34,9 +34,9 @@ class Material {
     /* Constructors */
     // Thema 9: Toevoegen
     // NOTE: No id in the constructor bc db created the id
-    public Material(String name, String nameInSpanish, String technique) {
+    public Material(String name, String nameSpanish, String technique) {
         this.name = name;
-        this.nameInSpanish = nameInSpanish;
+        this.nameSpanish = nameSpanish;
         this.technique = technique;
     }
 
@@ -54,8 +54,8 @@ class Material {
         return name;
     }
 
-    public String getNameInSpanish() {
-        return nameInSpanish;
+    public String getNameSpanish() {
+        return nameSpanish;
     }
 
     public String getTechnique() {
@@ -76,7 +76,7 @@ class Material {
 
     void update(String name, String nameInSpanish, String technique) {
         this.name = name;
-        this.nameInSpanish = nameInSpanish;
+        this.nameSpanish = nameInSpanish;
         this.technique = technique;
     }
     /* Equals & Hashcode */

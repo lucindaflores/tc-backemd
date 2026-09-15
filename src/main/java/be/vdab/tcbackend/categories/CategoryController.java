@@ -2,15 +2,13 @@ package be.vdab.tcbackend.categories;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.jspecify.annotations.NonNull;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @RestController
 @RequestMapping("categories")
-//@CrossOrigin
+@CrossOrigin
 class CategoryController {
 
     private final CategoryService categoryService;
@@ -20,7 +18,7 @@ class CategoryController {
     }
 
     private record CategoryName(long id, String name) {
-        CategoryName(@NonNull Category category) {
+        CategoryName(Category category) {
             this(category.getId(), category.getName());
         }
     }
@@ -36,11 +34,12 @@ class CategoryController {
     /* GET request that returns all the category names */
     // GET http://localhost:8080/categories
     @GetMapping()
-    Stream<CategoryName> findAll() {
+    List<CategoryName> findAll() {
         return categoryService.findAll()
                 .stream()
                 //.map(category -> new CategoryName(category));
-                .map(CategoryName::new);
+                .map(CategoryName::new)
+                .toList();
     }
 
     // GET requests finds by categoryId returns the category name */
@@ -65,10 +64,7 @@ class CategoryController {
     //DELETE http://localhost:8080/products/51
     @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
-        try {
-            categoryService.delete(id);
-        } catch (EmptyResultDataAccessException _) {
-        }
+        categoryService.delete(id);
     }
 
     // Updates Category name

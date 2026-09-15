@@ -1,8 +1,7 @@
 package be.vdab.tcbackend.users;
 
-import be.vdab.tcbackend.order.Order;
+import be.vdab.tcbackend.orders.Order;
 import jakarta.persistence.*;
-import org.aspectj.weaver.ast.Or;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -24,20 +23,18 @@ public class User {
 
     private String email;
 
-    @Column(name = "password_hash")
-    private String passwordHash;
-
     @Column(name = "first_name")
     private String firstName;
 
     @Column(name = "last_name")
     private String lastName;
 
-    //private String role;
     @Enumerated(EnumType.STRING) private Role role;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    private boolean active;
 
     /* Thema 23: Bidirectionele Associatie met @OneToMany */
     // In the class products, under the variable campus in @JoinColumn, JPA finds how the association is expressed in the database.
@@ -47,19 +44,14 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Order> orders = new LinkedHashSet<>();
 
-    @Version
-    private long version;
-
     /* Constructors */
-    public User(String email, String passwordHash, String firstName, String lastName) {
+    public User(String email, String firstName, String lastName) {
         this.email = email;
-        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.active = true;
         this.role = Role.CUSTOMER;
         this.createdAt = LocalDateTime.now();
-        //orders = new LinkedHashSet<>();
-        //addresses = new LinkedHashSet<>();
     }
 
     protected User() {
@@ -72,10 +64,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
     }
 
     public String getFirstName() {
@@ -94,6 +82,10 @@ public class User {
         return createdAt;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
     public Set<Address> getAddresses() {
         return Collections.unmodifiableSet(addresses);
     }
@@ -102,34 +94,18 @@ public class User {
         return Collections.unmodifiableSet(orders);
     }
 
-    public long getVersion() {
-        return version;
-    }
-
-    void add(Address address) {
-        addresses.add(address);
-    }
-
-    void update(String email, String firstName, String lastName) {
-        this.email = email;
+    void update(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    void updatePassword(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     void updateRole(Role role) {
         this.role = role;
     }
 
-    void updateFirstName(String firstName) {
-        this.firstName = firstName;
-    }
 
-    void updateLastName(String lastName) {
-        this.lastName = lastName;
+    void deactivate() {
+        this.active = false;
     }
 
 }

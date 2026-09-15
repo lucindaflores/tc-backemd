@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

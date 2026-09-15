@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 public class OrderDetailEmptyException extends RuntimeException {
     public OrderDetailEmptyException() {

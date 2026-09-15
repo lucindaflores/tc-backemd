@@ -3,6 +3,8 @@ package be.vdab.tcbackend.origins;
 import be.vdab.tcbackend.products.Product;
 import jakarta.persistence.*;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -23,12 +25,11 @@ public class Origin {
     // In the class products, under the variable campus in @JoinColumn, JPA finds how the association is expressed in the database.
     @OneToMany(mappedBy = "origin")
     @OrderBy("name")
-    private Set<Product> products;// = new LinkedHashSet<>();
+    private Set<Product> products = new LinkedHashSet<>();
 
     /* Constructors*/
     Origin(String name) {
         this.name = name;
-       // products = new LinkedHashSet<>();
     }
 
     // A default protected constructor is needed so JPA can work
@@ -44,24 +45,12 @@ public class Origin {
     }
 
     /* Setters */
-    public void setName(String name) {
+    void updateName(String name) {
         this.name = name;
     }
 
-    //    public Set<Product> getProducts() {
-//        return Collections.unmodifiableSet(products);
-//    }
+    public Set<Product> getProducts() {
+        return Collections.unmodifiableSet(products);
+    }
 
-    /* Functions */
-    /* Thema 23: Bidirectionele Associatie met @OneToMany */
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof Origin origin)) return false;
-//        return Objects.equals(name, origin.name);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hashCode(name);
-//    }
 }

@@ -1,15 +1,15 @@
 package be.vdab.tcbackend.users;
 
-import be.vdab.tcbackend.products.ProductNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("users")
+@CrossOrigin
 class UserController {
 
     private final UserService userService;
@@ -21,36 +21,30 @@ class UserController {
     /* DTOs */
     private record UserDetails(
             long userId,
-            String fullName,
+            String firstName,
+            String lastName,
             String email) {
         UserDetails (User user) {
             this(user.getId(),
-                    user.getFirstName() + " " + user.getLastName(),
+                    user.getFirstName() ,
+                    user.getLastName(),
                     user.getEmail());
         }
     }
 
     private record UpdateUser(
-            @NotBlank String email,
             @NotBlank String firstName,
             @NotBlank String lastName) {
     }
 
-    private record UpdatePassword(@NotBlank String password) { }
-
-    private record UpdateRole(Role role) { }
-
-    private record UpdateFirstName(@NotBlank String firstName) { }
-
-    private record UpdateLastName(@NotBlank String lastName) { }
-
+    private record UpdateRole(@NotNull Role role) { }
 
     // GET requests finds by id returns one USER */
     // GET http://localhost:8080/USERS/{{id}}
     @GetMapping("{id}")
     UserDetails findById(@PathVariable long id) {
         return userService.findById(id)
-                .map(user -> new UserDetails(user))
+                .map(UserDetails::new)
                 .orElseThrow(UserNotFoundException::new);
     }
 
@@ -63,7 +57,7 @@ class UserController {
     }
 
     // GET /users/byemail?email=diego@ramos.be
-    @GetMapping("byemail")
+    @GetMapping("byEmail")
     UserDetails findByEmail(@RequestParam String email) {
         return userService.findByEmail(email)
                 .map(UserDetails::new)
@@ -80,41 +74,24 @@ class UserController {
         userService.delete(id);
     }
 
-    // Update password
-    @PutMapping("{id}/password")
-    void updatePassword(
-            @PathVariable long id,
-            @RequestBody @Valid UpdatePassword updatePassword) {
-
-        userService.updatePassword(id, updatePassword.password());
+    @PutMapping("{id}")
+    void update(@PathVariable long id,
+                @RequestBody @Valid UpdateUser updateUser) {
+        userService.update(id,
+                updateUser.firstName(),
+                updateUser.lastName());
     }
 
     // Update role
+    // This needs to only be called by the Admin
     @PutMapping("{id}/role")
-    void updateRole(
-            @PathVariable long id,
-            @RequestBody UpdateRole updateRole) {
-
+    void updateRole(@PathVariable long id,
+                    @RequestBody @Valid UpdateRole updateRole) {
         userService.updateRole(id, updateRole.role());
     }
 
-    // Update first name
-    @PutMapping("{id}/firstname")
-    void updateFirstName(
-            @PathVariable long id,
-            @RequestBody @Valid UpdateFirstName updateFirstName) {
-
-        userService.updateFirstName(
-                id,
-                updateFirstName.firstName());
-    }
-
-    // Update last name
-    @PutMapping("{id}/lastname")
-    void updateLastName(
-            @PathVariable long id,
-            @RequestBody @Valid UpdateLastName updateLastName) {
-
-        userService.updateLastName(id, updateLastName.lastName());
+    @PutMapping("{id}/deactivate")
+    void deactivate(@PathVariable long id) {
+        userService.deactivate(id);
     }
 }

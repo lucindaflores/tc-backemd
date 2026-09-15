@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 public enum Status {
     PLACED, // At creation moment

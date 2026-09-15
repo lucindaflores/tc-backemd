@@ -1,7 +1,5 @@
 package be.vdab.tcbackend.origins;
 
-import be.vdab.tcbackend.categories.CategoryAlreadyExistsException;
-import be.vdab.tcbackend.categories.CategoryNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +14,6 @@ class OriginService {
 
     OriginService(OriginRepository originRepository) {
         this.originRepository = originRepository;
-    }
-
-    /* Method that returns the count of origins in table Origins */
-    long findCount() {
-        return originRepository.count();
     }
 
     List<Origin> findAll() {
@@ -57,22 +50,26 @@ class OriginService {
     /* Method that updates the origin name */
     @Transactional
     void updateName(long id, String name) {
-        // Checks that the categor already exists
         var origin = originRepository.findById(id)
                 .orElseThrow(OriginNotFoundException::new);
 
-        // The name is already present
-        if (findByName(name).isPresent()) {
+        var originWithSameName = originRepository.findByName(name);
+
+        if (originWithSameName.isPresent() && originWithSameName.get().getId() != id) {
             throw new OriginAlreadyExistsException();
         }
 
-        origin.setName(name);
+        origin.updateName(name);
     }
 
     @Transactional
     void delete(long id) {
         var origin = originRepository.findById(id)
                 .orElseThrow(OriginNotFoundException::new);
+
+        if (!origin.getProducts().isEmpty()) {
+            throw new OriginIsInUseException();
+        }
 
         originRepository.delete(origin);
     }

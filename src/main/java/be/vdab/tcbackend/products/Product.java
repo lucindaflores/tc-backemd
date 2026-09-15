@@ -1,7 +1,7 @@
 package be.vdab.tcbackend.products;
 
 import be.vdab.tcbackend.categories.Category;
-import be.vdab.tcbackend.order.OrderDetail;
+import be.vdab.tcbackend.orders.OrderDetail;
 import be.vdab.tcbackend.origins.Origin;
 import jakarta.persistence.*;
 
@@ -32,39 +32,33 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "is_active")
-    private boolean isActive;
+    private boolean active;
 
     /* Thema 21: @ManyToOne */
     // LAZY: So it does not load both tables when just one field of one table is needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;     // = private long categoryId;
+    private Category category;
 
     /* Thema 21: @ManyToOne */
     // LAZY: So it does not load both tables when just one field of one table is needed
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_id")
-    private Origin origin; // = private long origin_id;
+    private Origin origin;
 
     /* Thema 24: @ManyToMany */
     //Which Java entity contains the @JoinTable mapping and whose collection changes Hibernate uses to maintain that join table.
+    // Owning side
     @ManyToMany
-    @JoinTable( //indicates the intermediate table that has the association
-            name = "product_materials", // name of the intermediate table
-                //-⬇ joinColumns indicates the column in the intermediate table that is the FK to
-            // the PK of the table (material) that belongs to the current entity (Materials)
+    @JoinTable(
+            name = "product_materials",
             joinColumns = @JoinColumn(name = "product_id"),
-            // ⬇inverseJoinColumns indicates the column in the intermediate table
-            // that is the FK to the PK of the table products
             inverseJoinColumns = @JoinColumn(name = "material_id"))
-    private Set<Material> materials = new LinkedHashSet<>();// Set that represents the many-to-many association
+    private Set<Material> materials = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "product")
     private Set<OrderDetail> orderDetails;
 
-    @Version
-    private long version;
 
     /* Constructors */
     // Thema 9: Toevoegen
@@ -84,9 +78,10 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        this.isActive = isActive;
+        this.active = isActive;
         this.category = category;
         this.origin = origin;
+        orderDetails = new LinkedHashSet<>();
        // materials = new LinkedHashSet<>();
     }
 
@@ -124,8 +119,8 @@ public class Product {
         return imageUrl;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public boolean active() {
+        return active;
     }
 
     // Thema 21: @ManyToOne
@@ -143,9 +138,6 @@ public class Product {
         return Collections.unmodifiableSet(materials);
     }
 
-    long getVersion() {
-        return version;
-    }
 
     /* @OneToMany */
     public Set<OrderDetail> getOrderDetails() {
@@ -183,6 +175,10 @@ public class Product {
         stock -= value;
     }
 
+    public void increaseStock(int value) {
+        this.stock += value;
+    }
+
  /* This method updates all fields at once, instead of calling set by set */
     void update(String code,
                 String name,
@@ -199,7 +195,7 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.imageUrl = imageUrl;
-        this.isActive = isActive;
+        this.active = isActive;
         this.category = category;
         this.origin = origin;
     }

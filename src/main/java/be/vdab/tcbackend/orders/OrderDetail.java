@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 import be.vdab.tcbackend.products.Product;
 import jakarta.persistence.*;
@@ -11,9 +11,9 @@ public class OrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "oderDetailGenerator") /*9.8 Sequence */
-    @SequenceGenerator(name = "oderDetailGenerator",
-            sequenceName = "orderitemid",
+            generator = "orderDetailGenerator") /*9.8 Sequence */
+    @SequenceGenerator(name = "orderDetailGenerator",
+            sequenceName = "detailid",
             allocationSize = 1) // increment by 1
     private long id;
 

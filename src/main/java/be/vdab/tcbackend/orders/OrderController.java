@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("orders")
+@CrossOrigin
 class OrderController {
 
     private final OrderService orderService;
@@ -73,7 +73,10 @@ class OrderController {
     }
 
     // DTO: List of product details to be used by DTO OrderWithFullDetails
-    private record OrderedDetails(String productName, int quantity, BigDecimal unitPrice, BigDecimal value) {
+    private record OrderedDetails(String productName,
+                                  int quantity,
+                                  BigDecimal unitPrice,
+                                  BigDecimal value) {
         public OrderedDetails(OrderDetail orderDetails) {
             this(orderDetails.getProductName(),
                  orderDetails.getQuantity(),
@@ -97,33 +100,37 @@ class OrderController {
     List<OrderWithoutDetails> findAll() {
         return orderService.findAll()
                 .stream()
-                .map(order -> new OrderWithoutDetails(order))
-              //  .map(product -> new ProductController.ProductName(product))
+                .map(OrderWithoutDetails::new)
                 .toList();
     }
     //List means: I already have a collection of results.
-    // Stream: I want to process a sequence of objects.
+    //Stream: I want to process a sequence of objects.
 
     // GET requests finds by id returns one order */
     // GET http://localhost:8080/orders/{{id}}
     @GetMapping("{id}")
-    Optional<OrderWithoutDetails> findById(@PathVariable long id) {
-        return Optional.of(orderService.findById(id)
-                .map(order -> new OrderWithoutDetails(order))
-                .orElseThrow(OrderNotFoundException::new));
+    OrderWithoutDetails findById(@PathVariable long id) {
+        return orderService.findById(id)
+                .map(OrderWithoutDetails::new)
+                .orElseThrow(OrderNotFoundException::new);
     }
 
     // GET requests finds by id returns one order */
     // GET http://localhost:8080/orders/{{id}}
     @GetMapping("{id}/fulldetails")
-    List<OrderWithFullDetails> findByIdWithDetails(@PathVariable long id) {
+    OrderWithFullDetails findByIdWithDetails(@PathVariable long id) {
         return orderService.findById(id)
-                .map(order -> new OrderWithFullDetails(order))
-                .stream().toList();
+                .map(OrderWithFullDetails::new)
+                .orElseThrow(OrderNotFoundException::new);
     }
 
-    // GET request that find an order by its userId
-    //
+    @GetMapping("byUser/{userId}")
+    List<OrderWithoutDetails> findByUserIdOrderByOrderDateDesc(@PathVariable long userId) {
+        return orderService.findByUserIdOrderByOrderDateDesc(userId)
+                .stream()
+                .map(OrderWithoutDetails::new)
+                .toList();
+    }
 
     /* POST request to create a new Order with detail & status=PLACED */
     // POST http://localhost:8080/orders/

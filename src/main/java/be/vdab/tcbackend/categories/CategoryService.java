@@ -1,6 +1,6 @@
 package be.vdab.tcbackend.categories;
 
-import org.jspecify.annotations.NonNull;
+import be.vdab.tcbackend.products.ProductRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +14,11 @@ import java.util.Optional;
 class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-
-    CategoryService(CategoryRepository categoryRepository) {
+    CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     /* Method that returns the count of categories in table products */
@@ -60,16 +61,16 @@ class CategoryService {
     /* Method that updates the name of a category */
     @Transactional
     void updateName(long id, String name) {
-        // Checks that the categor already exists
         var category = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
 
-        // The name is already present
-        if (findByName(name).isPresent()) {
+        var categoryWithSameName = categoryRepository.findByName(name);
+
+        if (categoryWithSameName.isPresent() && categoryWithSameName.get().getId() != id) {
             throw new CategoryAlreadyExistsException();
         }
 
-        category.setName(name);
+        category.updateName(name);
     }
 
     /* Method that deletes a category */
@@ -77,6 +78,10 @@ class CategoryService {
     void delete(long id) {
         var category = categoryRepository.findById(id)
                 .orElseThrow(CategoryNotFoundException::new);
+
+        if (productRepository.existsByCategoryId(id)) {
+            throw new CategoryIsInUseException();
+        }
 
         categoryRepository.delete(category);
     }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-// <entity class, variable type of the PK>
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /* Method that finds by categoryId and returns optional product */
@@ -22,14 +21,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /* Method that find a list of products for a Set of materials */
     List<Product> findDistinctByMaterials_IdIn(Set<Long> materialIds);
 
-    /* Method that finds the current version of a given id */
-    @Query("""
-       select product.version
-       from Product product
-       where product.id = :id
-       """)
-    long findVersionById(long id);
-
     /* Method that finds a list of products if the stock >0 */
     List<Product> findByStockGreaterThan(int stock);
 
@@ -42,5 +33,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Integer> findStockById(long id);
 
 
-
+    boolean existsByCategoryId(long id);
 }

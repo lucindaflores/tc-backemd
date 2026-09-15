@@ -17,7 +17,6 @@ import java.util.Set;
 class ProductService {
 
     private final ProductRepository productRepository;
-
     private final CategoryRepository categoryRepository;
     private final OriginRepository originRepository;
     private final MaterialRepository materialRepository;
@@ -81,42 +80,47 @@ class ProductService {
     @Transactional
     long create(NewProduct newProduct) {
         try {
-            // 2. Find the Category identified by categoryId.
+            // Find the cat
             var category = categoryRepository.findById(newProduct.categoryId())
                     .orElseThrow(CategoryNotFoundException::new);
             // RETURNS: Optional<Category>
 
-            //3. If originId exists: find Origin.
+            //  Find origin
             var origin = originRepository.findById(newProduct.originId())
                     .orElseThrow(OriginNotFoundException::new);
             // RETURNS: Optional<Origin>
 
-            // 4. Find Materials identified by materialIds.
+            // Find Materials
             // Product: materials added in the Product constructor & function
             var materials = materialRepository.findAllById(newProduct.materialIds());
 
-           //  5. Create a Product obj
+            IO.println("Requested: " + newProduct.materialIds());
+            IO.println("Found: " + materials.size());
+
+            // Compares sets sizes to see if they have the same number of elements
+            if (materials.size() != newProduct.materialIds().size()) {
+                throw new MaterialNotFoundException();
+            }
+
             var product = new Product(newProduct.code(),
                     newProduct.name(),
                     newProduct.description(),
                     newProduct.price(),
                     newProduct.stock(),
                     newProduct.imageUrl(),
-                    newProduct.isActive(),
+                    newProduct.active(),
                     category,
                     origin);
 
-            //  6. Ask ProductRepository to save it.
             productRepository.save(product);
 
             // Adding the materials to product_materials table
             for (var material : materials) {
-                material.add(product); // owning side
-                product.add(material); // opposite side
+                product.add(material); // owning side
+                material.add(product); // inverse side to synchronize the set
             }
            // materials.forEach(product::add);
 
-            // 7. Return its generated ID.
              return product.getId();
         } catch (DataIntegrityViolationException _) {
             throw new ProductAlreadyExistsException();
@@ -130,11 +134,6 @@ class ProductService {
         var product = productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
 
-
-        if (product.getVersion() != editProduct.version()) {
-            throw new ProductVersionConflictException();
-        }
-
         var category = categoryRepository.findById(editProduct.categoryId())
                 .orElseThrow(CategoryNotFoundException::new);
 
@@ -143,13 +142,17 @@ class ProductService {
 
         var materials = materialRepository.findAllById(editProduct.materialIds());
 
+            if (materials.size() != editProduct.materialIds().size()) {
+                throw new MaterialNotFoundException();
+            }
+
         product.update(editProduct.code(),
                     editProduct.name(),
                     editProduct.description(),
                     editProduct.price(),
                     editProduct.stock(),
                     editProduct.imageUrl(),
-                    editProduct.isActive(),
+                    editProduct.active(),
                     category,
                     origin);
 

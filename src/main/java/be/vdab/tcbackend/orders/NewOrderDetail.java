@@ -1,8 +1,6 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 import jakarta.validation.constraints.Positive;
-
-import java.math.BigDecimal;
 
 record NewOrderDetail(
         @Positive int quantity,

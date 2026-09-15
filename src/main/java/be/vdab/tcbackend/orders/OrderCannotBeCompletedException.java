@@ -1,4 +1,4 @@
-package be.vdab.tcbackend.order;
+package be.vdab.tcbackend.orders;
 
 public class OrderCannotBeCompletedException extends RuntimeException {
     public OrderCannotBeCompletedException(long id, Status status) {

@@ -2,7 +2,6 @@ package be.vdab.tcbackend.origins;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import org.jspecify.annotations.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +18,7 @@ class OriginController {
 
     /* DTOs */
     private record OriginName(long id, String name) {
-        OriginName(@NonNull Origin origin) {
+        OriginName(Origin origin) {
             this(origin.getId(), origin.getName());
         }
     }
@@ -43,7 +42,7 @@ class OriginController {
                 .orElseThrow(OriginNotFoundException::new);
     }
 
-    @GetMapping("byname")
+    @GetMapping("byName")
     OriginName findByName(@RequestParam String name) {
         return originService.findByName(name)
                 .map(OriginName::new)

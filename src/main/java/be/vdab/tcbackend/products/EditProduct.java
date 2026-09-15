@@ -15,9 +15,9 @@ record EditProduct(
         @NotNull @Positive BigDecimal price,
         @PositiveOrZero int stock,
         String imageUrl,
-        boolean isActive,
+        boolean active,
         @Positive long categoryId,
-        @Positive Long originId,
+        @Positive long originId,
         @NotNull Set<Long> materialIds,
         @PositiveOrZero long version //the editing version
 ){

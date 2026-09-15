@@ -24,7 +24,7 @@ class MaterialController {
         MaterialDetails(Material material) {
             this(material.getId(),
                  material.getName(),
-                 material.getNameInSpanish(),
+                 material.getNameSpanish(),
                  material.getTechnique()
             );
         }
@@ -46,7 +46,7 @@ class MaterialController {
                 .orElseThrow(MaterialNotFoundException::new);
     }
 
-    @GetMapping("byname")
+    @GetMapping("byName")
     MaterialDetails findByName(@RequestParam String name) {
         return materialService.findByName(name)
                 .map(MaterialDetails::new)

@@ -1,15 +1,13 @@
 package be.vdab.tcbackend.users;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
-@RequestMapping("address")
+@RequestMapping("addresses")
+@CrossOrigin
 class AddressController {
 
     private final AddressService addressService;
@@ -19,7 +17,6 @@ class AddressController {
     }
 
     /* DTOs */
-    //NOTE: This can return user inside a { user.. }
     private record AddressDetails(
             long addressId,
             String street,
@@ -53,7 +50,7 @@ class AddressController {
 
     // GET requests finds by userId returns one address */
     // GET http://localhost:8080/products/byUserId/{{id}}
-    @GetMapping("/byuserid/{userId}")
+    @GetMapping("/byUser/{userId}")
     List<AddressDetails> findByUserId(@PathVariable long userId) {
         return addressService.findByUserId(userId)
                 .stream()
@@ -70,14 +67,11 @@ class AddressController {
     }
 
     /* Thema 10: Verwijderen */
-    /* DELETE request to delete an user by Id */
+    /* DELETE request to delete a user by id */
     //DELETE http://localhost:8080/users/{{id}}
     @DeleteMapping("{id}")
     void delete(@PathVariable long id) {
-        try {
             addressService.delete(id);
-        } catch (EmptyResultDataAccessException _) {
-        }
     }
 
     @PutMapping("{id}")
